@@ -1,11 +1,12 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { StatusError } from './interfaces';
+import { tasksRoutes } from './routes';
 
 const app = express();
 
-app.get('/', (req, res, next) => {
-    res.send('Hello World!');
-})
+app.use(express.json())
+
+app.use('/tasks', tasksRoutes);
 
 app.use((error: Error | StatusError, req: Request, res: Response, next: NextFunction) => {
     if('statusCode' in error) {
