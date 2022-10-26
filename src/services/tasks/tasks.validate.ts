@@ -11,17 +11,22 @@ export const validateCreateOne = (payload: any): Promise<ITask> => {
 }
 
 export const validateGetMany = (payload: any) => {
+    const dateInterval = Joi.object({
+        start: Joi.date().optional(),
+        end: Joi.date().optional()
+    });
+
     const schema = Joi.object({
         sort: Joi.object({
             createdAt: Joi.string().valid('asc', 'desc').optional(),
             deadline: Joi.string().valid('asc', 'desc').optional(),
-            completedAt: Joi.string().valid('asc', 'desc').optional()
+            completed: Joi.string().valid('asc', 'desc').optional()
         }).optional(),
         filter: Joi.object({
             body: Joi.string().min(0).max(200).optional(),
-            createdAt: Joi.date().optional(),
-            deadline: Joi.date().optional(),
-            completedAt: Joi.date().optional()
+            createdAt: dateInterval.optional(),
+            deadline: dateInterval.optional(),
+            completed: dateInterval.optional()
         }).optional(),
         skip: Joi.number().min(0).optional(),
         limit: Joi.number().min(0).optional()

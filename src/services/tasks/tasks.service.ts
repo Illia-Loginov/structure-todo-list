@@ -18,6 +18,22 @@ export const getMany = async (payload: any) => {
         }
     }
 
+    for(const date of ['createdAt', 'deadline', 'completed']) {
+        if(filter[date]) {
+            const { start, end } = filter[date];
+            
+            filter[date] = {}
+
+            if(start) {
+                filter[date]['$gte'] = start;
+            }
+    
+            if(end) {
+                filter[date]['$lt'] = end;
+            }
+        }
+    }
+
     return Task.find(filter).sort(sort).skip(skip).limit(limit);
 }
 
