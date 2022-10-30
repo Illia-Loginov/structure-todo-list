@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import Joi from 'joi';
+import helmet from 'helmet';
 import { StatusError } from './interfaces';
 import logger from './logger';
 import { morgan } from './middleware';
@@ -7,8 +8,9 @@ import { tasksRoutes } from './routes';
 
 const app = express();
 
+app.use(helmet());
 app.use(morgan);
-app.use(express.json())
+app.use(express.json());
 
 app.use('/tasks', tasksRoutes);
 
