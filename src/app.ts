@@ -5,6 +5,7 @@ import { StatusError } from './interfaces';
 import logger from './logger';
 import { morgan } from './middleware';
 import { tasksRoutes } from './routes';
+import { errors } from './utils';
 
 const app = express();
 
@@ -13,6 +14,10 @@ app.use(morgan);
 app.use(express.json());
 
 app.use('/tasks', tasksRoutes);
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+    next(errors.notFound('Not found'))
+})
 
 app.use((error: Error | StatusError, req: Request, res: Response, next: NextFunction) => {
     if('statusCode' in error) {
