@@ -3,7 +3,7 @@ import app from './app';
 import logger from './logger';
 import { db } from './utils';
 
-const port = config.get('server.port');
+const port = process.env.PORT || config.get('server.port');
 
 db.connect();
 

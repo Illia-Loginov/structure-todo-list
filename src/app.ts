@@ -13,6 +13,9 @@ app.use(helmet());
 app.use(morgan);
 app.use(express.json());
 
+app.get('/', (req: Request, res: Response, next: NextFunction) => {
+    res.status(200).json('To-do list TypeScript app');
+})
 app.use('/tasks', tasksRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
