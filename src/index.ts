@@ -7,4 +7,6 @@ const port = process.env.PORT || config.get('server.port');
 
 db.connect();
 
-const server = app.listen(port, () => logger.info(`Server running on port ${port}`))
+const server = app.listen(port, () =>
+  logger.info(`Server running on port ${port}`)
+);

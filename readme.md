@@ -1,12 +1,15 @@
 # Structure-oriented to-do list API
+
 An Express and TypeScript application with focus on structural parts (such as usage of layered architecture, logger, etc.) of an API, rather than functional parts.
 
 # Documentation
 
 ## GET `/` - Healthcheck
+
 Check whether the API is running
 
 ### Success example
+
 ```json
 HTTP/1.1 200 OK
 
@@ -14,21 +17,25 @@ HTTP/1.1 200 OK
 ```
 
 ## POST `/tasks` - Create task
+
 Create one new task
 
 ### Request body
+
 - **body** (required, String) - Description or details of the task
 - **deadline** (optional, Date) - Task deadline
 
 ### Request body example
+
 ```json
 {
-	"body": "Complete API docs",
-	"deadline": "2022-12-08"
+  "body": "Complete API docs",
+  "deadline": "2022-12-08"
 }
 ```
 
 ### Success example
+
 ```json
 HTTP/1.1 200 OK
 
@@ -42,9 +49,11 @@ HTTP/1.1 200 OK
 ```
 
 ## GET `/tasks` - Get many tasks
+
 Get a list of tasks
 
 ### Query parameters
+
 - **sort[createdAt]** (optional, String ("asc" or "desc")) - Sort by task creation date s
 - **sort[deadline]** (optional, String ("asc" or "desc")) - Sort by task deadlines
 - **sort[completed]** (optional, String ("asc" or "desc")) - Sort by task completion dates
@@ -59,11 +68,13 @@ Get a list of tasks
 - **limit** (optional, Number) - Maximum number of tasks to return
 
 ### Request URL example
+
 ```
 /tasks/?sort[createdAt]=desc&sort[deadline]=asc&filter[deadline][start]=2022-10-28&filter[deadline][end]=2023-10-29&filter[body]=o&skip=1&limit=2
 ```
 
 ### Success example
+
 ```json
 HTTP/1.1 200 OK
 
@@ -86,17 +97,21 @@ HTTP/1.1 200 OK
 ```
 
 ## DELETE `/tasks/:taskId` - Delete task
+
 Delete one task by its ID
 
 ### Parameters
+
 - **taskId** (required, ObjectId) - Task ID
 
 ### Request URL example
+
 ```
 /tasks/6359788211ec4cf2b0fc099c
 ```
 
 ### Success example
+
 ```json
 HTTP/1.1 200 OK
 
@@ -110,29 +125,35 @@ HTTP/1.1 200 OK
 ```
 
 ## PATCH `/tasks/:taskId` - Update task
+
 Update one task by its ID
 
 ### Parameters
+
 - **taskId** (required, ObjectId) - Task ID
 
 ### Request URL example
+
 ```
 /tasks/638f80eadf4d6b087719cc0c
 ```
 
 ### Request body
+
 - **body** (required, String) - Description or details of the task
 - **deadline** (optional, Date) - Task deadline
 
 ### Request body example
+
 ```json
 {
-	"body": "Dolor sit",
-	"deadline": "2022-12-09"
+  "body": "Dolor sit",
+  "deadline": "2022-12-09"
 }
 ```
 
 ### Success example
+
 ```json
 HTTP/1.1 200 OK
 
@@ -146,17 +167,21 @@ HTTP/1.1 200 OK
 ```
 
 ## PATCH `/tasks/:taskId/complete` - Complete task
+
 Complete one task by its ID
 
 ### Parameters
+
 - **taskId** (required, ObjectId) - Task ID
 
 ### Request URL example
+
 ```
 /tasks/638f80eadf4d6b087719cc0c/complete
 ```
 
 ### Success example
+
 ```json
 HTTP/1.1 200 OK
 
