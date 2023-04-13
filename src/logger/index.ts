@@ -1,13 +1,7 @@
 import developmentLogger from './development.logger';
 import productionLogger from './production.logger';
-import { Logger } from 'winston';
 
-let logger: Logger;
-
-if (process.env.NODE_ENV !== 'production') {
-  logger = developmentLogger;
-} else {
-  logger = productionLogger;
-}
+const logger =
+  process.env.NODE_ENV !== 'production' ? developmentLogger : productionLogger;
 
 export default logger;
