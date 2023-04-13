@@ -1,43 +1,20 @@
-import express, { NextFunction, Request, Response } from 'express';
-import Joi from 'joi';
+import express from 'express';
 import helmet from 'helmet';
-import { StatusError } from './interfaces';
-import logger from './logger';
-import { morgan } from './middleware';
-import { tasksRoutes } from './routes';
-import { errors } from './utils';
+import { morgan, notFoundHandler, errorHandler } from './middleware';
+import { tasksRoutes, healthcheck } from './routes';
 
 const app = express();
 
+// Middleware
 app.use(helmet());
 app.use(morgan);
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response, next: NextFunction) => {
-  res.status(200).json('To-do list TypeScript app');
-});
+// Routes
+app.get('/', healthcheck);
 app.use('/tasks', tasksRoutes);
+app.use(notFoundHandler);
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  next(errors.notFound('Not found'));
-});
-
-app.use(
-  (
-    error: Error | StatusError,
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    if ('statusCode' in error) {
-      res.status(error.statusCode).json(error.message);
-    } else if (error instanceof Joi.ValidationError) {
-      res.status(400).json(error.message);
-    } else {
-      logger.error(error);
-      res.sendStatus(500);
-    }
-  }
-);
+app.use(errorHandler);
 
 export default app;
