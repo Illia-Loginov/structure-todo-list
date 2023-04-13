@@ -10,5 +10,9 @@
     "options": {
       "serverSelectionTimeoutMS": 5000
     }
+  },
+
+  "logger": {
+    "level": "debug"
   }
 }
