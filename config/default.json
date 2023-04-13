@@ -1,6 +1,8 @@
 {
   "server": {
-    "port": 5000
+    "port": 5000,
+    "serverRestartDelay": 1000,
+    "maxRetryAttempts": 3
   },
 
   "database": {
