@@ -14,5 +14,10 @@
 
   "logger": {
     "level": "debug"
+  },
+
+  "httpLogger": {
+    "format": ":method :url :status - :response-time ms",
+    "level": "http"
   }
 }

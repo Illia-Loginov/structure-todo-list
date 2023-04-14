@@ -1,13 +1,13 @@
 import express from 'express';
 import helmet from 'helmet';
-import { morgan, notFoundHandler, errorHandler } from './middleware';
+import { httpLogger, notFoundHandler, errorHandler } from './middleware';
 import { tasksRoutes, healthcheck } from './routes';
 
 const app = express();
 
 // Middleware
 app.use(helmet());
-app.use(morgan);
+app.use(httpLogger);
 app.use(express.json());
 
 // Routes
