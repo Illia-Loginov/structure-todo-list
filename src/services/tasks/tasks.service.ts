@@ -1,6 +1,62 @@
 import { Task } from '../../models';
 import * as validation from './tasks.validate';
 import { errors, regex } from '../../utils';
+import {
+  dateRange,
+  filter,
+  filterQuery,
+  dateRangeQuery,
+  regexQuery,
+  dateName
+} from '../../interfaces';
+
+const findTaskById = async (taskId: string) => {
+  const task = await Task.findById(taskId);
+  if (!task) {
+    throw errors.notFound('Task not found');
+  }
+
+  return task;
+};
+
+const createRegexQuery = (searchValue: string): regexQuery => {
+  return {
+    $regex: regex.escape(searchValue),
+    $options: 'i'
+  };
+};
+
+const createDateRangeQuery = (dateRange: dateRange): dateRangeQuery => {
+  const { start, end } = dateRange;
+
+  const dateRangeQuery: dateRangeQuery = {};
+
+  if (start) {
+    dateRangeQuery['$gte'] = start;
+  }
+
+  if (end) {
+    dateRangeQuery['$lt'] = end;
+  }
+
+  return dateRangeQuery;
+};
+
+const createFilterQuery = (filter: filter) => {
+  const filterQuery: filterQuery = {};
+
+  if (filter.body) {
+    filterQuery.body = createRegexQuery(filter.body);
+  }
+
+  for (const date of ['createdAt', 'deadline', 'completed'] as dateName[]) {
+    if (filter[date]) {
+      filterQuery[date] = createDateRangeQuery(filter[date] as dateRange);
+    }
+  }
+
+  return filter;
+};
 
 export const createOne = async (payload: any) => {
   const data = await validation.validateCreateOne(payload);
@@ -16,39 +72,16 @@ export const getMany = async (payload: any) => {
     limit = 0
   } = await validation.validateGetMany(payload);
 
-  if (filter.body) {
-    filter.body = {
-      $regex: regex.escape(filter.body),
-      $options: 'i'
-    };
-  }
-
-  for (const date of ['createdAt', 'deadline', 'completed']) {
-    if (filter[date]) {
-      const { start, end } = filter[date];
-
-      filter[date] = {};
-
-      if (start) {
-        filter[date]['$gte'] = start;
-      }
-
-      if (end) {
-        filter[date]['$lt'] = end;
-      }
-    }
-  }
-
-  return Task.find(filter).sort(sort).skip(skip).limit(limit);
+  return Task.find(createFilterQuery(filter))
+    .sort(sort)
+    .skip(skip)
+    .limit(limit);
 };
 
 export const deleteOne = async (params: any) => {
   const { taskId } = await validation.validateTaskId(params);
 
-  const task = await Task.findById(taskId);
-  if (!task) {
-    throw errors.notFound('Task not found');
-  }
+  const task = await findTaskById(taskId);
 
   await task.remove();
 
@@ -58,10 +91,7 @@ export const deleteOne = async (params: any) => {
 export const completeOne = async (params: any) => {
   const { taskId } = await validation.validateTaskId(params);
 
-  const task = await Task.findById(taskId);
-  if (!task) {
-    throw errors.notFound('Task not found');
-  }
+  const task = await findTaskById(taskId);
 
   task.completed = new Date();
 
@@ -73,10 +103,7 @@ export const completeOne = async (params: any) => {
 export const updateOne = async (params: any, payload: any) => {
   const { taskId } = await validation.validateTaskId(params);
 
-  const task = await Task.findById(taskId);
-  if (!task) {
-    throw errors.notFound('Task not found');
-  }
+  const task = await findTaskById(taskId);
 
   if (task.completed) {
     throw errors.badRequest('Cannot change task that is already completed');

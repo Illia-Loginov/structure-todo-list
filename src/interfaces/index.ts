@@ -3,3 +3,4 @@ export * from './ITask';
 export * from './server';
 export * from './db';
 export * from './httpLogger';
+export * from './filter';

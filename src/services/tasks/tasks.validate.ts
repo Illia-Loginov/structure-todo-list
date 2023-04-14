@@ -1,7 +1,7 @@
 import Joi from 'joi';
-import { ITask } from '../../interfaces';
+import { Task } from '../../interfaces';
 
-export const validateCreateOne = (payload: any): Promise<ITask> => {
+export const validateCreateOne = (payload: any): Promise<Task> => {
   const schema = Joi.object({
     body: Joi.string().min(1).max(200).required(),
     deadline: Joi.date().greater('now').optional()
@@ -43,7 +43,7 @@ export const validateTaskId = (params: any): Promise<{ taskId: string }> => {
   return schema.validateAsync(params);
 };
 
-export const validateUpdateOne = (payload: any): Promise<Partial<ITask>> => {
+export const validateUpdateOne = (payload: any): Promise<Partial<Task>> => {
   const schema = Joi.object({
     body: Joi.string().min(1).max(200).optional(),
     deadline: Joi.date().greater('now').optional()
