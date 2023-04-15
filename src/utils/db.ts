@@ -11,17 +11,18 @@ const getDatabaseConfig = (): dbArgs => {
   };
 };
 
+const objToString = (obj: any) => {
+  return util
+    .inspect(obj, false, 10, true)
+    .replace(/\n/g, '')
+    .replace(/\s{2,}/g, ' ');
+};
+
 const debugLog = (
   collectionName: string,
   methodName: string,
   ...methodArgs: any[]
 ) => {
-  const objToString = (obj: any) => {
-    return util
-      .inspect(obj, false, 10, true)
-      .replace(/\n/g, '')
-      .replace(/\s{2,}/g, ' ');
-  };
   logger.debug(
     `\x1B[0;36mMongoose:\x1B[0m ${collectionName}.${methodName}` +
       `(${methodArgs.map(objToString).join(', ')})`
