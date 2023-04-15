@@ -82,7 +82,6 @@ export const deleteOne = async (params: any) => {
   const { taskId } = await validation.validateTaskId(params);
 
   const task = await findTaskById(taskId);
-
   await task.remove();
 
   return task;
@@ -92,9 +91,7 @@ export const completeOne = async (params: any) => {
   const { taskId } = await validation.validateTaskId(params);
 
   const task = await findTaskById(taskId);
-
   task.completed = new Date();
-
   await task.save();
 
   return task;
