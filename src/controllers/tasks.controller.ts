@@ -32,9 +32,9 @@ const updateOne = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const errorCatcher = (requestHandler: RequestHandler) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      return requestHandler(req, res, next);
+      await requestHandler(req, res, next);
     } catch (error) {
       next(error);
     }
