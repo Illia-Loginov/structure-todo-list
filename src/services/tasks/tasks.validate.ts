@@ -36,18 +36,25 @@ const updateOneSchema = Joi.object({
   deadline: Joi.date().greater('now').optional()
 });
 
-export const validateCreateOne = (payload: any): Promise<ITask> => {
+const validateCreateOne = (payload: any): Promise<ITask> => {
   return createOneSchema.validateAsync(payload);
 };
 
-export const validateGetMany = (payload: any) => {
+const validateGetMany = (payload: any) => {
   return getManySchema.validateAsync(payload);
 };
 
-export const validateTaskId = (params: any): Promise<{ taskId: string }> => {
+const validateTaskId = (params: any): Promise<{ taskId: string }> => {
   return taskIdSchema.validateAsync(params);
 };
 
-export const validateUpdateOne = (payload: any): Promise<Partial<ITask>> => {
+const validateUpdateOne = (payload: any): Promise<Partial<ITask>> => {
   return updateOneSchema.validateAsync(payload);
+};
+
+export default {
+  validateCreateOne,
+  validateGetMany,
+  validateTaskId,
+  validateUpdateOne
 };

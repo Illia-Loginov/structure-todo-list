@@ -1,5 +1,5 @@
 import { Task } from '../../models';
-import * as validation from './tasks.validate';
+import validation from './tasks.validate';
 import { errors, regex } from '../../utils';
 import {
   dateRange,
@@ -58,13 +58,13 @@ const createFilterQuery = (filter: filter) => {
   return filter;
 };
 
-export const createOne = async (payload: any) => {
+const createOne = async (payload: any) => {
   const data = await validation.validateCreateOne(payload);
 
   return Task.create(data);
 };
 
-export const getMany = async (payload: any) => {
+const getMany = async (payload: any) => {
   const {
     sort = {},
     filter = {},
@@ -78,7 +78,7 @@ export const getMany = async (payload: any) => {
     .limit(limit);
 };
 
-export const deleteOne = async (params: any) => {
+const deleteOne = async (params: any) => {
   const { taskId } = await validation.validateTaskId(params);
 
   const task = await findTaskById(taskId);
@@ -87,7 +87,7 @@ export const deleteOne = async (params: any) => {
   return task;
 };
 
-export const completeOne = async (params: any) => {
+const completeOne = async (params: any) => {
   const { taskId } = await validation.validateTaskId(params);
 
   const task = await findTaskById(taskId);
@@ -97,7 +97,7 @@ export const completeOne = async (params: any) => {
   return task;
 };
 
-export const updateOne = async (params: any, payload: any) => {
+const updateOne = async (params: any, payload: any) => {
   const { taskId } = await validation.validateTaskId(params);
 
   const task = await findTaskById(taskId);
@@ -117,4 +117,12 @@ export const updateOne = async (params: any, payload: any) => {
   await task.save();
 
   return task;
+};
+
+export default {
+  createOne,
+  getMany,
+  deleteOne,
+  completeOne,
+  updateOne
 };
