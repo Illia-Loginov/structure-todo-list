@@ -1,7 +1,10 @@
-import developmentLogger from './development.logger';
-import productionLogger from './production.logger';
+import { loggerTypes } from '../interfaces';
+import loggerFactory from './loggerFactory';
 
-const logger =
-  process.env.NODE_ENV !== 'production' ? developmentLogger : productionLogger;
+const logger = loggerFactory(
+  process.env.NODE_ENV !== 'production'
+    ? loggerTypes.development
+    : loggerTypes.production
+);
 
 export default logger;
