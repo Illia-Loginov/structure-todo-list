@@ -1,4 +1,4 @@
-import { Task } from '../../models';
+import { TaskRepository } from '../../repositories';
 import validation from './tasks.validate';
 import { errors, regex } from '../../utils';
 import {
@@ -10,8 +10,10 @@ import {
   dateName
 } from '../../interfaces';
 
+const taskRepository = new TaskRepository();
+
 const findTaskById = async (taskId: string) => {
-  const task = await Task.findById(taskId);
+  const task = await taskRepository.findById(taskId);
   if (!task) {
     throw errors.notFound('Task not found');
   }
@@ -61,7 +63,7 @@ const createFilterQuery = (filter: filter) => {
 const createOne = async (payload: any) => {
   const data = await validation.validateCreateOne(payload);
 
-  return Task.create(data);
+  return taskRepository.create(data);
 };
 
 const getMany = async (payload: any) => {
@@ -72,29 +74,23 @@ const getMany = async (payload: any) => {
     limit = 0
   } = await validation.validateGetMany(payload);
 
-  return Task.find(createFilterQuery(filter))
-    .sort(sort)
-    .skip(skip)
-    .limit(limit);
+  return taskRepository.find(createFilterQuery(filter), sort, skip, limit);
 };
 
 const deleteOne = async (params: any) => {
   const { taskId } = await validation.validateTaskId(params);
 
   const task = await findTaskById(taskId);
-  await task.remove();
 
-  return task;
+  return taskRepository.delete(task);
 };
 
 const completeOne = async (params: any) => {
   const { taskId } = await validation.validateTaskId(params);
 
   const task = await findTaskById(taskId);
-  task.completed = new Date();
-  await task.save();
 
-  return task;
+  return taskRepository.update(task, { completed: new Date() });
 };
 
 const updateOne = async (params: any, payload: any) => {
@@ -108,15 +104,7 @@ const updateOne = async (params: any, payload: any) => {
 
   const data = await validation.validateUpdateOne(payload);
 
-  for (const [key, value] of Object.entries(data)) {
-    if (value) {
-      (task as any)[key] = value;
-    }
-  }
-
-  await task.save();
-
-  return task;
+  return taskRepository.update(task, data);
 };
 
 export default {
