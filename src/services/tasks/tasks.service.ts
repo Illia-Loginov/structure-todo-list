@@ -1,4 +1,3 @@
-import { TaskRepository } from '../../repositories';
 import validation from './tasks.validate';
 import { errors, regex } from '../../utils';
 import {
@@ -7,110 +6,116 @@ import {
   filterQuery,
   dateRangeQuery,
   regexQuery,
-  dateName
+  dateName,
+  Repository,
+  ITask
 } from '../../interfaces';
+export class TaskService {
+  private repository;
 
-const taskRepository = new TaskRepository();
-
-const findTaskById = async (taskId: string) => {
-  const task = await taskRepository.findById(taskId);
-  if (!task) {
-    throw errors.notFound('Task not found');
+  constructor(repository: Repository<ITask>) {
+    this.repository = repository;
   }
 
-  return task;
-};
-
-const createRegexQuery = (searchValue: string): regexQuery => {
-  return {
-    $regex: regex.escape(searchValue),
-    $options: 'i'
-  };
-};
-
-const createDateRangeQuery = (dateRange: dateRange): dateRangeQuery => {
-  const { start, end } = dateRange;
-
-  const dateRangeQuery: dateRangeQuery = {};
-
-  if (start) {
-    dateRangeQuery['$gte'] = start;
-  }
-
-  if (end) {
-    dateRangeQuery['$lt'] = end;
-  }
-
-  return dateRangeQuery;
-};
-
-const createFilterQuery = (filter: filter) => {
-  const filterQuery: filterQuery = {};
-
-  if (filter.body) {
-    filterQuery.body = createRegexQuery(filter.body);
-  }
-
-  for (const date of ['createdAt', 'deadline', 'completed'] as dateName[]) {
-    if (filter[date]) {
-      filterQuery[date] = createDateRangeQuery(filter[date] as dateRange);
+  private findTaskById = async (taskId: string) => {
+    const task = await this.repository.findById(taskId);
+    if (!task) {
+      throw errors.notFound('Task not found');
     }
-  }
 
-  return filter;
-};
+    return task;
+  };
 
-const createOne = async (payload: any) => {
-  const data = await validation.validateCreateOne(payload);
+  private createRegexQuery = (searchValue: string): regexQuery => {
+    return {
+      $regex: regex.escape(searchValue),
+      $options: 'i'
+    };
+  };
 
-  return taskRepository.create(data);
-};
+  private createDateRangeQuery = (dateRange: dateRange): dateRangeQuery => {
+    const { start, end } = dateRange;
 
-const getMany = async (payload: any) => {
-  const {
-    sort = {},
-    filter = {},
-    skip = 0,
-    limit = 0
-  } = await validation.validateGetMany(payload);
+    const dateRangeQuery: dateRangeQuery = {};
 
-  return taskRepository.find(createFilterQuery(filter), sort, skip, limit);
-};
+    if (start) {
+      dateRangeQuery['$gte'] = start;
+    }
 
-const deleteOne = async (params: any) => {
-  const { taskId } = await validation.validateTaskId(params);
+    if (end) {
+      dateRangeQuery['$lt'] = end;
+    }
 
-  const task = await findTaskById(taskId);
+    return dateRangeQuery;
+  };
 
-  return taskRepository.delete(task);
-};
+  private createFilterQuery = (filter: filter) => {
+    const filterQuery: filterQuery = {};
 
-const completeOne = async (params: any) => {
-  const { taskId } = await validation.validateTaskId(params);
+    if (filter.body) {
+      filterQuery.body = this.createRegexQuery(filter.body);
+    }
 
-  const task = await findTaskById(taskId);
+    for (const date of ['createdAt', 'deadline', 'completed'] as dateName[]) {
+      if (filter[date]) {
+        filterQuery[date] = this.createDateRangeQuery(
+          filter[date] as dateRange
+        );
+      }
+    }
 
-  return taskRepository.update(task, { completed: new Date() });
-};
+    return filter;
+  };
 
-const updateOne = async (params: any, payload: any) => {
-  const { taskId } = await validation.validateTaskId(params);
+  createOne = async (payload: any) => {
+    const data = await validation.validateCreateOne(payload);
 
-  const task = await findTaskById(taskId);
+    return this.repository.create(data);
+  };
 
-  if (task.completed) {
-    throw errors.badRequest('Cannot change task that is already completed');
-  }
+  getMany = async (payload: any) => {
+    const {
+      sort = {},
+      filter = {},
+      skip = 0,
+      limit = 0
+    } = await validation.validateGetMany(payload);
 
-  const data = await validation.validateUpdateOne(payload);
+    return this.repository.find(
+      this.createFilterQuery(filter),
+      sort,
+      skip,
+      limit
+    );
+  };
 
-  return taskRepository.update(task, data);
-};
+  deleteOne = async (params: any) => {
+    const { taskId } = await validation.validateTaskId(params);
 
-export default {
-  createOne,
-  getMany,
-  deleteOne,
-  completeOne,
-  updateOne
-};
+    const task = await this.findTaskById(taskId);
+
+    return this.repository.delete(task);
+  };
+
+  completeOne = async (params: any) => {
+    const { taskId } = await validation.validateTaskId(params);
+
+    const task = await this.findTaskById(taskId);
+
+    return this.repository.update(task, { completed: new Date() });
+  };
+
+  updateOne = async (params: any, payload: any) => {
+    const { taskId } = await validation.validateTaskId(params);
+
+    const task = await this.findTaskById(taskId);
+
+    if (task.completed) {
+      throw errors.badRequest('Cannot change task that is already completed');
+    }
+
+    const data = await validation.validateUpdateOne(payload);
+
+    return this.repository.update(task, data);
+  };
+}

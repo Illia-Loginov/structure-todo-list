@@ -1,8 +1,7 @@
 import { Document, FilterQuery, SortOrder } from 'mongoose';
 import { Task } from '../models';
-import { ITask } from '../interfaces';
-
-export class TaskRepository {
+import { ITask, Repository } from '../interfaces';
+export class TaskRepository implements Repository<ITask> {
   async create(task: any) {
     return Task.create(task);
   }

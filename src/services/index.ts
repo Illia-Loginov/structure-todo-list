@@ -1,1 +1,1 @@
-export { default as tasksService } from './tasks/tasks.service';
+export * from './tasks/tasks.service';

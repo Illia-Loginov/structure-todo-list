@@ -1,5 +1,8 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { tasksService } from '../services';
+import { TaskService } from '../services';
+import { TaskRepository } from '../repositories';
+
+const tasksService = new TaskService(new TaskRepository());
 
 const createOne = async (req: Request, res: Response, next: NextFunction) => {
   const task = await tasksService.createOne(req.body);
